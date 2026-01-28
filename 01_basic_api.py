@@ -29,17 +29,25 @@ def setup_gemini():
     print("api key configured succussfully")
     return genai
 
-def simple_chat(prompt, model_name="deep-research-pro-preview-12-2025"):
+def simple_chat(prompt, model_name="gemini-2.5-pro"):
     try:
         model=genai.GenerativeModel(model_name)
-        response=model.generate_content(prompt)
 
         print(f"You asked {prompt}")
         print(f"{'*'*4}")
+        response=model.generate_content(prompt,stream=True)
 
-        md=Markdown(response.text)
-        console.print(md)
-        return response
+        full_text=""
+        for chunk in response:
+            full_text+=chunk.text
+            console.print(chunk.text,end="")
+        print()
+
+        #optional
+        # md=Markdown(response.text)
+        # console.print(md)
+
+        return full_text
     
     except Exception as e:
         print("error occured :",e)
